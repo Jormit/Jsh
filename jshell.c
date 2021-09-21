@@ -1,11 +1,11 @@
-// cowrie.c a simple shell
+// jshell a simple shell
 
 // Version History:
 //
 // Version 0.1 - Added shell built-in commands (cd, pwd).
 //             - Added execution from path and current directory.
 //
-// Version 0.2 - Added History stored to ~/.cowrie_history.
+// Version 0.2 - Added History stored to ~/.jshell_history.
 //             - Added history n command.
 //             - Added ability to execute last n command with !n.
 //
@@ -44,10 +44,11 @@
 #include <glob.h>
 
 #define MAX_LINE_CHARS 1024
-#define INTERACTIVE_PROMPT "cowrie> "
+#define INTERACTIVE_PROMPT "$ " 
 #define DEFAULT_PATH "/bin:/usr/bin"
 #define WORD_SEPARATORS " \t\r\n"
 #define DEFAULT_HISTORY_SHOWN 10
+#define PATH_BUFF_SIZE 1024
 
 // Defines for the last_n_commands function.
 #define EXECUTE 1
@@ -126,6 +127,9 @@ int main(void) {
     // main loop: print prompt, read line, execute command
     while (1) {
         if (prompt) {
+	    char buff[PATH_BUFF_SIZE];
+	    getcwd(buff, PATH_BUFF_SIZE);
+ 	    fputs(buff, stdout);
             fputs(prompt, stdout);
         }
 
@@ -546,10 +550,10 @@ int get_full_path(char *program, char **path, char full_path[MAX_LINE_CHARS]) {
     return 0;
 }
 
-// Stores given command to ~/.cowrie_history file.
+// Stores given command to ~/.jshell_history file.
 void store_command (char **words) {
     // Need to get full path of home directory.
-    char *file_path = get_file_in_home(".cowrie_history");
+    char *file_path = get_file_in_home(".jshell_history");
 
     // Now just open and append command with newline at the end.
     FILE *fp = fopen(file_path, "a");
@@ -568,7 +572,7 @@ void store_command (char **words) {
 // If mode is PRINT, the last nth commands will be printed.
 //
 void last_n_commands(int number, int mode, char **environ, char **path) {
-    char *file_path = get_file_in_home(".cowrie_history");
+    char *file_path = get_file_in_home(".jshell_history");
     char line[MAX_LINE_CHARS]; 
     int line_number = 0;
 
